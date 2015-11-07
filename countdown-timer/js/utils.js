@@ -53,7 +53,7 @@ var timezoneOffset = function( date ) {
     var jul = new Date( date.getFullYear( ), 6, 1 );
 
     return Math.max( jan.getTimezoneOffset( ), jul.getTimezoneOffset( ) );
-}
+};
 
 /**
  * Detects if client is currently in DST
@@ -64,7 +64,7 @@ var timezoneOffset = function( date ) {
 var isDST = function( ) {
     var date = new Date( );
     return date.getTimezoneOffset( ) < timezoneOffset( date );
-}
+};
 
 /**
  * Gets ms between two datetimes
@@ -99,7 +99,7 @@ var getTimeDiff = function( end, start ) {
 
         return 0;
     }
-}
+};
 
 /**
  * Gets time remaining from now until a certain datetime.

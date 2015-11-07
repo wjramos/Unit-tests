@@ -50,14 +50,14 @@
 
     width: 100%;
     height: 100%;
-    padding: @grid-gutter-width;
+    padding: 0 @grid-gutter-width;
 
     @media ( min-width: @screen-sm-min ) {
-        padding: @grid-gutter-width-sm;
+        padding: 0 @grid-gutter-width-sm;
     }
 
     @media ( min-width: @screen-md-min ) {
-        padding: @grid-gutter-width-md;
+        padding: 0 @grid-gutter-width-md;
     }
 
     .backdrop {
@@ -68,7 +68,10 @@
         width: 100%;
         height: 100%;
 
+        opacity: 1;
         background-color: @core-architectural-1;
+
+        .transition( 2s );
     }
 
     .dialog {
@@ -81,7 +84,7 @@
         transition: all .3s ease 0s;
 
         background-color: @core-architectural-1;
-        box-shadow: 0 0 20px 6px @core-architectural-1;
+        box-shadow: 0 0 5px 1px @core-architectural-1;
 
         @media ( min-width: @screen-sm-min ) {
             top: 115px;
@@ -90,30 +93,50 @@
         }
 
         @media ( min-width: @screen-md-min ) {
-            top: 174px;
+            top: 164px;
 
             padding: 100px 20px;
         }
 
         > video,
         > img {
+
             position: absolute;
             top: 50%;
             left: 50%;
 
+            /* Trim sides if it has to */
             width: auto;
-            height: auto;
+            height: 100%;
+
+            /* Trim top/bottom if it has to */
+            @media ( min-width: @screen-md-min ) {
+                width: 100%;
+                height: auto;
+            }
+
+            max-width: none;
+            max-height: none;
             min-width: 100%;
             min-height: 100%;
 
             pointer-events: none;
 
-            .translate( -50%, -50% );
-        }
+            -ms-interpolation-mode: bicubic;
 
-        > section {
-            opacity: .95;
-            color: @text-color-overlay;
+            -o-object-position: center;
+               object-position: center;
+
+            -o-object-fit: cover;
+               object-fit: cover;
+
+            .translate( -50% , -50% );
+
+            + section {
+                opacity: .95;
+                background: transparent none;
+                color: @text-color-overlay;
+            }
         }
     }
 }

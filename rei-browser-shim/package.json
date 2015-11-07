@@ -1,0 +1,30 @@
+{
+  "name": "rei-browser-shim",
+  "version": "0.5.1",
+  "description": "CommonJS module shims for JavaScript libraries and objects attached to the browser's global 'window' object",
+  "main": "index.js",
+  "author": {
+    "name": "Rob McGuire-Dale",
+    "email": "rmcguir@rei.com"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://git.rei.com/scm/fedpack/rei-browser-shim.git"
+  },
+  "private": true,
+  "devDependencies": {
+    "mocha": "^1.19.0",
+    "proxyquire": "^1.0.0",
+    "should": "^3.3.2",
+    "sinon": "~1.10.2"
+  },
+  "gitHead": "c96374f810c4b163309e587f8a719b7932fc6dd3",
+  "readme": "ERROR: No README data found!",
+  "_id": "rei-browser-shim@0.5.1",
+  "_shasum": "6e7234c7323e88b6d1f923e5b8ef6b33a321f70e",
+  "_from": "git+http://git.rei.com/scm/fedpack/rei-browser-shim#c96374f810c4b163309e587f8a719b7932fc6dd3",
+  "_resolved": "git+http://git.rei.com/scm/fedpack/rei-browser-shim#c96374f810c4b163309e587f8a719b7932fc6dd3"
+}

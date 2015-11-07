@@ -1,6 +1,6 @@
 'use strict';
 
-var util      = require( './utils' );
+var util      = require( './util' );
 var STRING    = require( './strings' );
 
 var showOverlay;
@@ -78,7 +78,7 @@ var addBackgroundEffect = function ( overlay ) {
     }
 
     /* Reveal */
-    overlay.querySelectorAll( STRING.selector.backdrop )[ 0 ].style.opacity = '.7';
+    overlay.querySelectorAll( STRING.selector.backdrop )[ 0 ].style.opacity = STRING.style.opacity;
 };
 
 /**

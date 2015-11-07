@@ -1,0 +1,14 @@
+{
+  "name": "ut-shim",
+  "version": "0.0.0",
+  "description": "Unit testing shim",
+  "main": "js/main.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Alex Perkins <aperkin@rei.com>",
+  "devDependencies": {}
+}
