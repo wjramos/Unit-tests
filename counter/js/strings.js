@@ -6,9 +6,5 @@ module.exports = {
         countProperty: 'data-count-property',
         countSpeed   : 'data-count-speed',
         countUpdate  : 'data-count-update'
-    },
-    visibility : {
-        hidden  : 'hidden',
-        visible : 'visible'
     }
 };

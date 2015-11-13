@@ -1,7 +1,7 @@
 'use strict';
 
-var util      = require( './util' );
-var STRING    = require( './strings' );
+var util        = require( './util' );
+var STRING      = require( './strings' );
 
 var showOverlay;
 
@@ -43,22 +43,43 @@ var show = function ( overlay, show ) {
 
     if ( show === true ) {
 
-        /* Add visual effect to background elements */
-        window.document.addEventListener( STRING.event.domReady, function ( ) { addBackgroundEffect( overlay ) } );
 
-        /* Data */
+        /* Add true src from data attribute to prevent unneeded partial load when not visible */
+        if ( window.screen.width < 768 ) {
+            /* On mobile, load image */
+            var image = overlay.querySelectorAll( 'img' );
+
+            util.copyAttrib( image, 'data-src', 'src' );
+            util.copyAttrib( image, 'data-srcset', 'srcset' );
+
+        } else {
+            /* Else load video asset */
+            var media = overlay.querySelectorAll( 'source, video, img' );
+            var video = overlay.querySelectorAll( 'video' )[ 0 ];
+
+            util.copyAttrib( media, 'data-src', 'src' );
+            util.copyAttrib( media, 'data-srcset', 'srcset' );
+            util.copyAttrib( media, 'data-poster', 'poster' );
+            video.load( );
+            video.play( );
+        }
+
+        /* Set data attribute for page view metrics */
         overlay.setAttribute( STRING.data.shown, true );
-
-        /* Display */
-        util.removeClasses( overlay, STRING.effect.hidden );
 
         /* Bind sub-elements with close events */
         util.bindClose( overlay, STRING.selector.closeTriggers, STRING.event.click, STRING.effect.fadeOut, function ( ) { removeBackgroundEffect( overlay ) } );
 
+        /* Add visual effect to background elements */
+        window.document.addEventListener( STRING.event.domReady, function ( ) { addBackgroundEffect( overlay ) } );
+
+        /* Display */
+        util.removeClasses( overlay, STRING.effect.hidden );
+
     } else {
 
         /* Don't show, remove node */
-        util.removeNode( overlay );
+        util.removeNode( overlay, media );
     }
 };
 

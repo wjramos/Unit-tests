@@ -17,17 +17,64 @@ var setCookie = function( name, value, days ) {
 };
 
 /**
+ * Element Iterations with callback
+ *
+ * @param    { element/nodeList } elems Elements to interate
+ * @callback { function } func Callback function to perform on each element in set
+ */
+var eachElem = function( elems, func ) {
+
+    // If element is a single node ( using getElementById )
+    if ( !elems.length ) {
+        elems = [ elems ];
+    }
+
+    for ( var i = 0; i < elems.length; i++ ) {
+        func( elems[ i ] );
+    }
+};
+
+/**
+ * Splits string or array into array of individual words
+ *
+ * @param  { string/array } source Phrase/set of phrases to split
+ * @return { array } Returns array of individual words
+ */
+var toWordArray = function ( source ) {
+    // If string, split to array
+    if ( typeof source === 'string' ) {
+        source = source.split( ' ' );
+    }
+
+    // Break up any classes that contain multiple
+    for ( var i = 0; i < source.length; i++ ) {
+        if ( source[ i ].indexOf( ' ' ) > -1 ) {
+            var multiple = source[ i ].split( ' ' );
+
+            // Remove index that contains multiple
+            source.splice( i, 1 );
+
+            for ( var j = 0; j < multiple.length; j++ ) {
+                source.push( multiple[ j ] );
+            }
+        }
+    }
+
+    return source;
+};
+
+/**
  * Get element siblings
  *
  * @param  { element }  element The element to get the siblings of
  * @return { nodeList } returns an array list of node siblings
  */
-var getSiblings = function( element ) {
+var getSiblings = function( elem ) {
 
     return Array.prototype.filter.call(
-        element.parentNode.children,
-        function ( child ) {
-            return child !== element;
+        elem.parentNode.children,
+        function( child ) {
+            return child !== elem;
         }
     );
 };
@@ -38,43 +85,23 @@ var getSiblings = function( element ) {
  * @param { element/array } elements The elements to add classes to
  * @param { string/array }  classes  The classes to add
  */
-var addClasses   = function( elements, classes ) {
-    var elements = elements;
-    var classes  = classes;
+var addClasses = function( elems, classes ) {
 
-    // If element is a single node ( using getElementById )
-    if ( !elements.length ) {
-        elements = [ elements ];
-    }
-
-    // If string, split to array
-    if ( typeof classes === 'string' ) {
-        classes = classes.split( ' ' );
-    }
-
-    // Break up any classes that contain multiple
-    for ( var i = 0; i < classes.length; i++ ) {
-        if ( classes[ i ].indexOf( ' ' ) > -1 ) {
-            var multiple = classes[ i ].split( ' ' );
-
-            // Remove index that contains multiple
-            classes.splice( i, 1 );
-
-            for ( var j = 0; j < multiple.length; j++ ) {
-                classes.push( multiple[ j ] );
-            }
-        }
-    }
+    var classes = toWordArray( classes );
 
     // Iterate through elements
-    for ( i = 0; i < elements.length; i++ ) {
-
-        if ( elements[ i ].classList ) {
-            elements[ i ].classList.add.apply( elements[ i ].classList, classes );
-        } else {
-            elements[ i ].className += ' ' + classes[ i ].join( ' ' );
+    eachElem(
+        elems,
+        function( elem ) {
+            if ( elem.classList ) {
+                elem.classList.add.apply( elem.classList, classes );
+            } else {
+                for ( var i = 0; i < classes.length; i++ ) {
+                    elem.className += ' ' + classes[ i ].join( ' ' );
+                }
+            }
         }
-    }
+    );
 };
 
 /**
@@ -83,47 +110,25 @@ var addClasses   = function( elements, classes ) {
  * @param { nodeList }     elements The elements to remove classes from
  * @param { string/array }  classes The classes to remove
  */
-var removeClasses = function( elements, classes ) {
-    var elements  = elements;
-    var classes   = classes;
+var removeClasses = function( elems, classes ) {
 
-    // If element is a single node ( using getElementById )
-    if ( !elements.length ) {
-        elements = [ elements ];
-    }
-
-    // If string, split to array
-    if ( typeof classes === 'string' ) {
-        classes = classes.split( ' ' );
-    }
-
-    // Break up any classes that contain multiple
-    for ( var i = 0; i < classes.length; i++ ) {
-        if ( classes[ i ].indexOf( ' ' ) > -1 ) {
-            var multiple = classes[ i ].split( ' ' );
-
-            // Remove index that contains multiple
-            classes.splice( i, 1 );
-
-            for ( var j = 0; j < multiple.length; j++ ) {
-                classes.push( multiple[ j ] );
-            }
-        }
-    }
+    var classes = toWordArray( classes );
 
     // Iterate through elements
-    for ( i = 0; i < elements.length; i++ ) {
-
-        if ( elements[ i ].classList ) {
-            elements[ i ].classList.remove.apply( elements[ i ].classList, classes );
-        } else {
-            elements[ i ].className = elements[ i ].className.split( ' ' ).filter(
-                function( className ) {
-                    return classes.indexOf( className ) === -1;
-                }
-            ).join( ' ' );
+    eachElem(
+        elems,
+        function( elem ) {
+            if ( elem.classList ) {
+                elem.classList.remove.apply( elem.classList, classes );
+            } else {
+                elem.className = elem.className.split( ' ' ).filter(
+                    function( className ) {
+                        return classes.indexOf( className ) === -1;
+                    }
+                ).join( ' ' );
+            }
         }
-    }
+    );
 };
 
 /**
@@ -133,7 +138,6 @@ var removeClasses = function( elements, classes ) {
  * @return { return }  Returns a number, reflecting transition duration in ms
  */
 var getTransition = function( element ) {
-    var property;
     var properties = [
         'transitionDuration',
         'WebkitTransitionDuration',
@@ -142,6 +146,7 @@ var getTransition = function( element ) {
         'OTransitionDuration'
     ];
 
+    var property;
     while ( property = properties.shift( ) ) {
         var duration = getComputedStyle( element )[ property ];
 
@@ -149,6 +154,7 @@ var getTransition = function( element ) {
             return parseFloat( duration ) * 1000;
         }
     }
+
     return 0;
 };
 
@@ -157,10 +163,9 @@ var getTransition = function( element ) {
  *
  * @param { element } element The element to remove
  */
-var removeNode = function( element ) {
-    element.parentNode.removeChild( element );
+var removeNode = function( elem ) {
+    elem.parentNode.removeChild( elem );
 };
-
 
 /**
  * Binds an event to an element
@@ -170,11 +175,11 @@ var removeNode = function( element ) {
  * @param  { function } funct   The function to bind
  * @return { return }   Returns element method that binds function to event on the element
  */
-var bindEvent = function( element, evnt, funct ) {
-    if ( element.attachEvent ) {
-        return element.attachEvent( 'on' + evnt, funct );
+var bindEvent = function( elem, evnt, funct ) {
+    if ( elem.attachEvent ) {
+        return elem.attachEvent( 'on' + evnt, funct );
     } else {
-        return element.addEventListener( evnt, funct, false );
+        return elem.addEventListener( evnt, funct, false );
     }
 };
 
@@ -186,36 +191,61 @@ var bindEvent = function( element, evnt, funct ) {
  * @param { string }       evnt     The event to bind
  * @param { string/array } effect   Animation classes to add
  */
-var bindClose = function ( element, triggers, evnt, effect, removeEffect ) {
-    var triggers = element.querySelectorAll( triggers );
+var bindClose = function( elem, triggers, evnt, effect, removeEffect ) {
+    var triggers = elem.querySelectorAll( triggers );
 
     for ( i = 0; i < triggers.length; i++ ) {
         bindEvent(
             triggers[ i ],
             evnt,
-            function ( ) {
+            function( ) {
 
-                addClasses( element, effect );
+                addClasses( elem, effect );
                 removeEffect( );
 
                 setTimeout(
                     function( ) {
-                        removeNode( element );
+                        removeNode( elem );
                     },
-                    getTransition( element )
+                    getTransition( elem )
                 );
             }
         );
     }
 };
 
+/**
+ * Sets an element's attribute from another attribute
+ *
+ * @param { element/nodeList } element The element(s) to set attributes of
+ * @param { string }           srcAttrib The attribute to set source from
+ * @param { string }           tarAttrib The attribute to set
+ */
+var copyAttrib = function( elems, srcAttrib, tarAttrib ) {
+
+    if ( elems && srcAttrib && tarAttrib ) {
+
+        eachElem(
+            elems,
+            function( elem ) {
+                if ( elem.hasAttribute( srcAttrib ) ) {
+                    elem.setAttribute( tarAttrib, elem.getAttribute( srcAttrib ) );
+                }
+            }
+        );
+    }
+};
+
 module.exports = {
-    setCookie:     setCookie,
-    getSiblings:   getSiblings,
-    addClasses:    addClasses,
-    removeClasses: removeClasses,
-    getTransition: getTransition,
-    removeNode:    removeNode,
-    bindClose:     bindClose,
-    bindEvent:     bindEvent
+    setCookie     : setCookie,
+    getSiblings   : getSiblings,
+    addClasses    : addClasses,
+    removeClasses : removeClasses,
+    getTransition : getTransition,
+    removeNode    : removeNode,
+    bindClose     : bindClose,
+    bindEvent     : bindEvent,
+    copyAttrib    : copyAttrib,
+    eachElem      : eachElem,
+    toWordArray   : toWordArray
 };

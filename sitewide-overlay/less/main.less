@@ -83,6 +83,9 @@
 
         transition: all .3s ease 0s;
 
+        color: @core-architectural-5;
+        a { color: @core-architectural-5 }
+
         background-color: @core-architectural-1;
         box-shadow: 0 0 5px 1px @core-architectural-1;
 
@@ -131,6 +134,11 @@
                object-fit: cover;
 
             .translate( -50% , -50% );
+
+            &::-webkit-media-controls-start-playback-button {
+                display: none !important;
+                -webkit-appearance: none;
+            }
 
             + section {
                 opacity: .95;
