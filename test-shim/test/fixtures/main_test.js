@@ -10,6 +10,7 @@ var module2 = require( './main_test2' );
 var func1 = function () {
     var x = $( 'something' );
     x.css();
+    var n = doc.querySelectorAll( '.someClass' );
     return doc.getElementById( 'someId' );
 };
 
@@ -25,5 +26,5 @@ var func3 = function () {
 module.exports = {
     func1: func1,
     func2: func2,
-    func3: func3
+    func3: func3,
 };

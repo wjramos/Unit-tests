@@ -1,3 +1,5 @@
+var window = require( 'rei-browser-shim' ).win;
+
 /**
  * Sets a client cookie
  *
@@ -13,7 +15,7 @@ var setCookie = function( name, value, days ) {
 
     var cookieString = escape( value ) + ( ( days === null ) ? '' : ';expires=' + expiration.toUTCString( ) );
 
-    document.cookie = name + '=' + cookieString + ';path=/;domain=' + window.location.hostname;
+    window.document.cookie = name + '=' + cookieString + ';path=/;domain=' + window.location.hostname;
 };
 
 /**
@@ -236,6 +238,20 @@ var copyAttrib = function( elems, srcAttrib, tarAttrib ) {
     }
 };
 
+/**
+ * Checks the computed style on the <body> element to see if the appropriate breakpoint element is showing.
+ *
+ * @return {String|null} String containing the value in the content property of the body:after element, if no win.getComputedStyle, returns null.
+ */
+function getBreakpoint( ) {
+    if( !!window.getComputedStyle ) {
+        var contentString = window.getComputedStyle( document.body, ':after' ).getPropertyValue( 'content' );
+        return contentString.replace( /\W/g, '' );
+    }
+
+    return null;
+}
+
 module.exports = {
     setCookie     : setCookie,
     getSiblings   : getSiblings,
@@ -247,5 +263,6 @@ module.exports = {
     bindEvent     : bindEvent,
     copyAttrib    : copyAttrib,
     eachElem      : eachElem,
-    toWordArray   : toWordArray
+    toWordArray   : toWordArray,
+    getBreakpoint : getBreakpoint
 };

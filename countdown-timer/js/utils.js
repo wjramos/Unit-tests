@@ -9,9 +9,10 @@
  *                    or same number ( two-digit param )
  *                    as string.
  */
-var twoDigitFormat = function( number ) {
+var twoDigitFormat = function ( number ) {
     return ( '0' + number ).slice( -2 );
 };
+
 
 /**
  * Adjusts client's datetime to consistent timezone
@@ -19,9 +20,10 @@ var twoDigitFormat = function( number ) {
  * @param  { number } utcOffset The UTC offset to calibrate local time to
  * @return { return } Returns Date object, adjusted to specific timezone
  */
-var getCalibratedTime = function( utcOffset ) {
+var getCalibratedTime = function ( utcOffset ) {
 
-    var localTime   = new Date( );
+    var localTime = new Date( );
+
     var localOffset = localTime.getTimezoneOffset( ) * 60 * 1000;
     var utcOffset   = utcOffset * 60 * 60 * 1000;
 
@@ -39,6 +41,7 @@ var getCalibratedTime = function( utcOffset ) {
 
         return localTime;
     }
+    return localTime;
 };
 
 
@@ -48,12 +51,12 @@ var getCalibratedTime = function( utcOffset ) {
  * @param  { date }   date    The client's datetime
  * @return { return } Returns larger offset of Jan (northern hemisphere) or Jul (southern hemisphere)
  */
-var timezoneOffset = function( date ) {
+var timezoneOffset = function ( date ) {
     var jan = new Date( date.getFullYear( ), 0, 1 );
     var jul = new Date( date.getFullYear( ), 6, 1 );
 
     return Math.max( jan.getTimezoneOffset( ), jul.getTimezoneOffset( ) );
-}
+};
 
 /**
  * Detects if client is currently in DST
@@ -61,10 +64,19 @@ var timezoneOffset = function( date ) {
  * @param  { date }   date The client date
  * @return { return } Returns T/F if client is experiencing DST
  */
-var isDST = function( ) {
-    var date = new Date( );
+var isDST = function ( date ) {
+    var date = date;
+
+    if ( !date ) {
+        date = new Date( Date.now( ) );
+    }
+
+    if ( !date instanceof Date ) {
+        date = new Date( date );
+    }
+
     return date.getTimezoneOffset( ) < timezoneOffset( date );
-}
+};
 
 /**
  * Gets ms between two datetimes
@@ -73,7 +85,7 @@ var isDST = function( ) {
  * @param  { string/number } start A parsable date string/UNIX timestamp
  * @return { number } Returns the number of ms between two datetimes
  */
-var getTimeDiff = function( end, start ) {
+var getTimeDiff = function ( end, start ) {
     var end       = end;
     var start     = start;
 
@@ -99,7 +111,7 @@ var getTimeDiff = function( end, start ) {
 
         return 0;
     }
-}
+};
 
 /**
  * Gets time remaining from now until a certain datetime.
@@ -108,11 +120,18 @@ var getTimeDiff = function( end, start ) {
  * @param  { number } utcOffset  A timezone offset
  * @return { object } Returns an object containing numerical date-time properties
  */
-var getTimeUntil = function( end, utcOffset ) {
+var getTimeUntil = function ( end, utcOffset ) {
     var utcOffset = utcOffset;
 
-    if ( typeof utcOffset !== 'number' ) {
-        utcOffset = 7; // PST
+    if ( !utcOffset || typeof utcOffset !== 'number' ) {
+
+        var dst = isDST();
+
+        if ( dst ) {
+            utcOffset = 7; // PDT
+        } else {
+            utcOffset = 8; //PST
+        }
     }
 
     var now      = getCalibratedTime( utcOffset ).getTime( );
@@ -135,9 +154,9 @@ var getTimeUntil = function( end, utcOffset ) {
 };
 
 module.exports = {
-    twoDigitFormat   : twoDigitFormat,
-    getCalibratedTime: getCalibratedTime,
-    isDST            : isDST,
-    getTimeDiff      : getTimeDiff,
-    getTimeUntil     : getTimeUntil
+    twoDigitFormat    : twoDigitFormat,
+    getCalibratedTime : getCalibratedTime,
+    isDST             : isDST,
+    getTimeDiff       : getTimeDiff,
+    getTimeUntil      : getTimeUntil
 };

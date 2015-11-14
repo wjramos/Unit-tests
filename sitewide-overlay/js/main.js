@@ -1,6 +1,6 @@
 'use strict';
 
-var util        = require( './util' );
+var util        = require( './utils' );
 var STRING      = require( './strings' );
 
 var showOverlay;
@@ -45,7 +45,7 @@ var show = function ( overlay, show ) {
 
 
         /* Add true src from data attribute to prevent unneeded partial load when not visible */
-        if ( window.screen.width < 768 ) {
+        if ( util.getBreakpoint === 'xs' ) {
             /* On mobile, load image */
             var image = overlay.querySelectorAll( 'img' );
 
@@ -55,7 +55,7 @@ var show = function ( overlay, show ) {
         } else {
             /* Else load video asset */
             var media = overlay.querySelectorAll( 'source, video, img' );
-            var video = overlay.querySelectorAll( 'video' )[ 0 ];
+            var video = overlay.querySelector( 'video' );
 
             util.copyAttrib( media, 'data-src', 'src' );
             util.copyAttrib( media, 'data-srcset', 'srcset' );

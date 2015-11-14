@@ -20,13 +20,13 @@
  */
 
 var sinon = require( 'sinon' );
-var proxyquire = require( 'proxyquire' ).noCallThru();
+var proxyquire = require( 'proxyquire' ).noCallThru( );
 var _ = require( 'lodash-compat' );
 var chai = require( 'chai' );
 var winModule = require( './win-shim' );
-var sandbox = sinon.sandbox.create();
-var browserConfig;
+var sandbox = sinon.sandbox.create( );
 var jqModule = require( './jquery-shim' );
+var browserConfig;
 
 /**
  * Create proxyquire config for browser (DOM and JQuery).
@@ -56,11 +56,11 @@ var domifyConfig = function ( moduleFile, conf ) {
     var domifiedConf;
 
     for ( var moduleName in moduleConf ) {
-        domifiedConf = _.extend( browserConfig, moduleConf[moduleName] );
-        moduleConf[moduleName] = domifiedConf;
+        domifiedConf = _.extend( browserConfig, moduleConf[ moduleName ] );
+        moduleConf[ moduleName ] = domifiedConf;
     }
 
-    newConf[moduleFile] = moduleConf;
+    newConf[ moduleFile ] = moduleConf;
 
     return _.extend( conf, browserConfig );
 };
@@ -76,38 +76,27 @@ var callProxyquire = function ( moduleFile, config ) {
 };
 
 var callSinonAPI = function ( method, args ) {
-    var stubbedMethod = args[1];
-    var win = winModule.getWindow();
+    var stubbedMethod = args[ 1 ];
+    var win = winModule.getWindow( );
     var doc = win.document;
 
     // call stub/spy
-    var stubSpy = sandbox[method].apply( sandbox, args );
+    var stubSpy = sandbox[ method ].apply( sandbox, args );
 
     // add stubbed version to doc.
-    if ( isDocument( args[0] ) ) {
-        doc[stubbedMethod] = stubSpy;
+    if ( isDocument( args[ 0 ] ) ) {
+        doc[ stubbedMethod ] = stubSpy;
     }
 
     // add stubbed version to doc.
-    if ( isWindow( args[0] ) ) {
-        win[stubbedMethod] = stubSpy;
+    if ( isWindow( args[ 0 ] ) ) {
+        win[ stubbedMethod ] = stubSpy;
     }
 
     return stubSpy;
 };
 
 var mod = {
-
-    config: {},
-
-    restore: function () {
-        sandbox.restore();
-    },
-
-    sandbox: {},
-
-    win: {},
-
     // config is passed in shimmed modules (excuding any dom, jquery)
     init: function ( moduleFilePath, config ) {
 
@@ -132,18 +121,14 @@ var mod = {
         return callProxyquire( moduleFilePath, config );
     },
 
-    expect: chai.expect,
-
-    assert: chai.assert,
-
-    getDoc: function () {
-        return winModule.getWindow().document;
+    getDoc: function ( ) {
+        return winModule.getWindow( ).document;
     },
 
-    isSpy: function ( method ) {
-        if ( method ) {
-            return method.called !== undefined && method.returns === undefined;
-        }
+    // should conform to sinon's api
+    stub: function ( ) {
+        var args = Array.prototype.slice.call( arguments );
+        return callSinonAPI( 'stub', args );
     },
 
     isStub: function ( method ) {
@@ -153,25 +138,42 @@ var mod = {
     },
 
     getStub: function ( name ) {
-        var objects = [browserConfig.jquery2(), this.win.document, this.win];
+        var objects = [ browserConfig.jquery2( ), this.win.document, this.win ];
         var found = _.find( objects, function ( obj ) {
-            return obj[name] !== undefined;
+            return obj[ name ] !== undefined;
         } );
 
-        return found && found[name];
+        return found && found[ name ];
     },
 
     // should conform to sinon's api
-    stub: function () {
+    spy: function ( ) {
         var args = Array.prototype.slice.call( arguments );
-        return callSinonAPI( 'stub', args );
-    },
 
-    // should conform to sinon's api
-    spy: function () {
-        var args = Array.prototype.slice.call( arguments );
         return callSinonAPI( 'spy', args );
-    }
+    },
+
+    isSpy: function ( method ) {
+        if ( method ) {
+            return method.called !== undefined && method.returns === undefined;
+        }
+    },
+
+    restore: function ( ) {
+        sandbox.restore( );
+    },
+
+    assert: chai.assert,
+
+    expect: chai.expect,
+
+    should: chai.should,
+
+    config : {},
+
+    sandbox: {},
+
+    win    : {}
 };
 
 module.exports = mod;

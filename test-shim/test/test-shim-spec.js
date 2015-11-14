@@ -70,10 +70,25 @@ describe( 'Test1', function () {
     it( 'should initialize with chai assertion library by default', function () {
         expect( testShim.expect ).to.be.a( 'function' );
         expect( testShim.assert ).to.be.a( 'function' );
+        expect( testShim.should ).to.be.a( 'function' );
+    } );
+
+    it( 'should return stubbed element when a stubbed element-getter is called', function () {
+        moduleUnderTest.func1();
+        var testStub = testShim.getStub( 'getElementById' );
+        expect( testStub.called ).to.equal( true );
+        expect( testStub.returnValues[ 0 ] ).be.an( 'object' ).and.have.property( 'getAttribute' );
+    } );
+
+    it( 'should return stubbed array of elements when a stubbed multi-element-getter is called', function () {
+        moduleUnderTest.func1();
+        var testStub = testShim.getStub( 'querySelectorAll' );
+        expect( testStub.called ).to.equal( true );
+        expect( testStub.returnValues[ 0 ] ).be.an( 'array' );
+        expect( testStub.returnValues[ 0 ][ 0 ] ).to.be.an( 'object' ).and.have.property( 'getAttribute' );
     } );
 
     it( 'should reset dom stubs on init.', function () {
-
         moduleUnderTest.func1();
         var testStub = testShim.getStub( 'getElementById' );
         expect( testStub.called ).to.equal( true );
